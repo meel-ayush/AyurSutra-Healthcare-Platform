@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AyurSutra — Panchakarma Management Software</title>
+  <link rel="stylesheet" href="css/main.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <div class="login-page">
+    <nav class="login-nav">
+      <div class="brand">
+        <div class="brand-leaf">🌿</div>
+        <span>AyurSutra</span>
+      </div>
+      <span style="font-size:0.85rem; color:#718096;">Panchakarma Management Software</span>
+    </nav>
+
+    <div class="login-hero">
+      <div class="login-left">
+        <h1>Manage Panchakarma<br><span>the right way</span></h1>
+        <p>Automated therapy scheduling, real-time session tracking, and smart notifications — built for Ayurvedic practitioners and their patients.</p>
+
+        <div class="feature-pills">
+          <div class="pill">📅 Automated therapy scheduling</div>
+          <div class="pill">🔔 Pre & post-procedure alerts</div>
+          <div class="pill">📊 Progress visualisation</div>
+          <div class="pill">💬 Integrated feedback loop</div>
+        </div>
+      </div>
+
+      <div class="login-right">
+        <div class="login-card">
+          <h2>Welcome back</h2>
+          <p class="subtitle">Sign in to continue to your dashboard</p>
+
+          <div class="role-tabs">
+            <button class="role-tab active" data-role="patient">Patient</button>
+            <button class="role-tab" data-role="practitioner">Practitioner</button>
+          </div>
+
+          <div class="demo-hint" id="demoHint">
+            <strong>Demo — Patient:</strong><br />
+            patient@ayursutra.com / patient123
+          </div>
+
+          <div class="form-group">
+            <label>Email address</label>
+            <input type="email" id="emailInput" placeholder="you@example.com" />
+          </div>
+          <div class="form-group">
+            <label>Password</label>
+            <input type="password" id="passwordInput" placeholder="••••••••" />
+          </div>
+
+          <button class="btn-login" id="loginBtn">Sign in</button>
+          <p class="error-msg" id="errorMsg">Invalid email or password. Try the demo credentials above.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/app.js"></script>
+  <script>
+    // if already logged in, redirect straight to dashboard
+    const existing = getSession();
+    if (existing) {
+      window.location.href = existing.role === "practitioner" ? "practitioner.html" : "patient.html";
+    }
+
+    const roleTabs = document.querySelectorAll(".role-tab");
+    const demoHint = document.getElementById("demoHint");
+
+    const DEMO_HINTS = {
+      patient: "<strong>Demo — Patient:</strong><br />patient@ayursutra.com / patient123",
+      practitioner: "<strong>Demo — Practitioner:</strong><br />dr.sharma@ayursutra.com / doctor123"
+    };
+
+    roleTabs.forEach(tab => {
+      tab.addEventListener("click", () => {
+        roleTabs.forEach(t => t.classList.remove("active"));
+        tab.classList.add("active");
+        demoHint.innerHTML = DEMO_HINTS[tab.dataset.role];
+
+        // auto-fill demo credentials for convenience
+        const role = tab.dataset.role;
+        if (role === "patient") {
+          document.getElementById("emailInput").value = "patient@ayursutra.com";
+          document.getElementById("passwordInput").value = "patient123";
+        } else {
+          document.getElementById("emailInput").value = "dr.sharma@ayursutra.com";
+          document.getElementById("passwordInput").value = "doctor123";
+        }
+      });
+    });
+
+    // pre-fill patient by default
+    document.getElementById("emailInput").value = "patient@ayursutra.com";
+    document.getElementById("passwordInput").value = "patient123";
+
+    document.getElementById("loginBtn").addEventListener("click", () => {
+      const email = document.getElementById("emailInput").value.trim();
+      const password = document.getElementById("passwordInput").value;
+      const session = login(email, password);
+
+      if (!session) {
+        document.getElementById("errorMsg").style.display = "block";
+        return;
+      }
+
+      window.location.href = session.role === "practitioner" ? "practitioner.html" : "patient.html";
+    });
+
+    // allow enter key to submit
+    document.getElementById("passwordInput").addEventListener("keydown", e => {
+      if (e.key === "Enter") document.getElementById("loginBtn").click();
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AyurSutra — Practitioner Dashboard</title>
+  <link rel="stylesheet" href="css/main.css" />
+  <link rel="stylesheet" href="css/dashboard.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <div class="app">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-brand">
+        <div class="brand-leaf">🌿</div>
+        <span>AyurSutra</span>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-section-label">Main</div>
+        <button class="nav-link active" data-view="overview" onclick="setView('overview')">
+          <span class="icon">🏠</span> Overview
+        </button>
+        <button class="nav-link" data-view="schedule" onclick="setView('schedule')">
+          <span class="icon">📅</span> Schedule
+        </button>
+        <button class="nav-link" data-view="patients" onclick="setView('patients')">
+          <span class="icon">👥</span> Patients
+        </button>
+        <button class="nav-link" data-view="analytics" onclick="setView('analytics')">
+          <span class="icon">📊</span> Analytics
+        </button>
+      </div>
+
+      <div class="sidebar-user">
+        <div class="user-info">
+          <div class="user-avatar" id="pracInitials">PS</div>
+          <div class="user-meta">
+            <div class="user-name" id="pracName">Dr. Priya Sharma</div>
+            <div class="user-role">Practitioner</div>
+          </div>
+          <button class="btn-logout" onclick="logout()" title="Logout">⬡</button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main -->
+    <div class="main">
+      <div class="topbar">
+        <div>
+          <div class="topbar-title" id="topbarTitle">Overview</div>
+          <div class="topbar-sub" id="topbarDate"></div>
+        </div>
+        <div class="topbar-right">
+          <button class="notif-btn" onclick="toggleNotifPanel()">
+            🔔
+            <div class="notif-badge" id="notifBadge">2</div>
+          </button>
+        </div>
+      </div>
+
+      <div class="content" id="mainContent">
+        <!-- populated by JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Notification panel -->
+  <div class="notif-panel" id="notifPanel">
+    <div class="notif-panel-header">
+      <h3>Notifications</h3>
+      <button class="notif-close" onclick="toggleNotifPanel()">✕</button>
+    </div>
+    <div class="notif-list">
+      <!-- populated by JS -->
+    </div>
+  </div>
+
+  <!-- Add Session Modal -->
+  <div class="modal-overlay" id="addSessionModal">
+    <div class="modal">
+      <h3>Schedule New Session</h3>
+      <div class="form-field">
+        <label>Patient</label>
+        <select id="sessionPatient"></select>
+      </div>
+      <div class="form-row">
+        <div class="form-field">
+          <label>Date</label>
+          <input type="date" id="sessionDate" />
+        </div>
+        <div class="form-field">
+          <label>Time</label>
+          <input type="time" id="sessionTime" />
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-field">
+          <label>Therapy</label>
+          <select id="sessionTherapy">
+            <!-- filled from THERAPIES array -->
+          </select>
+        </div>
+        <div class="form-field">
+          <label>Room</label>
+          <select id="sessionRoom">
+            <option>Room 1</option>
+            <option>Room 2</option>
+            <option>Room 3</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-field">
+        <label>Duration (minutes)</label>
+        <input type="number" id="sessionDuration" value="60" min="15" max="180" />
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" onclick="closeModal('addSessionModal')">Cancel</button>
+        <button class="btn btn-primary" onclick="saveSession()">Schedule</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Patient Modal -->
+  <div class="modal-overlay" id="addPatientModal">
+    <div class="modal">
+      <h3>Add New Patient</h3>
+      <div class="form-row">
+        <div class="form-field">
+          <label>Full Name *</label>
+          <input type="text" id="pName" placeholder="e.g. Ravi Kumar" />
+        </div>
+        <div class="form-field">
+          <label>Age *</label>
+          <input type="number" id="pAge" placeholder="35" min="1" max="120" />
+        </div>
+      </div>
+      <div class="form-field">
+        <label>Condition / Complaint *</label>
+        <input type="text" id="pCondition" placeholder="e.g. Chronic fatigue, Arthritis" />
+      </div>
+      <div class="form-field">
+        <label>Therapy Plan</label>
+        <select id="pTherapy">
+          <!-- filled from THERAPIES -->
+        </select>
+      </div>
+      <div class="form-field">
+        <label>Total Sessions Planned</label>
+        <input type="number" id="pSessions" value="10" min="1" max="60" />
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" onclick="closeModal('addPatientModal')">Cancel</button>
+        <button class="btn btn-primary" onclick="savePatient()">Add Patient</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/app.js"></script>
+  <script src="js/practitioner.js"></script>
+  <script>
+    // guard — only practitioners get in here
+    const session = getSession();
+    if (!session || session.role !== "practitioner") {
+      window.location.href = "index.html";
+    } else {
+      document.getElementById("pracName").textContent = session.name;
+      document.getElementById("pracInitials").textContent = session.initials;
+    }
+
+    // fill therapy dropdowns
+    document.getElementById("sessionTherapy").innerHTML = THERAPIES.map(t => `<option>${t}</option>`).join("");
+    document.getElementById("pTherapy").innerHTML = THERAPIES.map(t => `<option>${t}</option>`).join("");
+
+    // today's date in topbar
+    document.getElementById("topbarDate").textContent = new Date().toLocaleDateString("en-IN", {
+      weekday: "long", year: "numeric", month: "long", day: "numeric"
+    });
+
+    // initial render
+    renderOverview();
+
+    // notification panel
+    function toggleNotifPanel() {
+      document.getElementById("notifPanel").classList.toggle("open");
+    }
+
+    // populate notif panel
+    const notifList = document.querySelector(".notif-list");
+    NOTIFICATIONS.practitioner.forEach(n => {
+      notifList.innerHTML += `
+        <div class="notif-item ${n.unread ? "unread" : ""}">
+          <div class="notif-dot"></div>
+          <div>
+            <div class="notif-text">${n.text}</div>
+            <div class="notif-time">${n.time}</div>
+          </div>
+        </div>
+      `;
+    });
+
+    const unreadCount = NOTIFICATIONS.practitioner.filter(n => n.unread).length;
+    if (!unreadCount) document.getElementById("notifBadge").style.display = "none";
+    else document.getElementById("notifBadge").textContent = unreadCount;
+  </script>
+</body>
+</html>
