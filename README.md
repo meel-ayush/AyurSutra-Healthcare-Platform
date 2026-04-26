@@ -199,9 +199,9 @@ AyurSutra addresses a genuine gap in healthcare tooling — the Ayurveda and Pan
 
 ## 📄 License
 
-This project is licensed under the MIT License — see the [LICENSE](LICENSE) file for details.
+This project is licensed under the [Creative Commons Attribution-NonCommercial 4.0 International License (CC BY-NC 4.0)](LICENSE).
 
-**In short:** You are free to use, modify, and distribute this software, but it comes with no warranties.
+*In short: You are free to download, modify, and use this code privately for local learning or school projects. However, if you share this project or any modifications publicly, you must give clear credit to the original author. You are strictly prohibited from using this project, its code, or its concepts for commercial purposes, generating revenue, or business operations without explicit written permission.*
 
 ---
 
