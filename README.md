@@ -119,8 +119,8 @@ Then go to `http://localhost:8000` and log in with either demo account above.
 
 ```
 AyurSutra-Healthcare-Platform/
-├── README.md
-├── LICENSE                  # MIT License
+├── README.md                # This File
+├── LICENSE                  # CC BY-NC 4.0 open-source rights
 ├── index.html               # Login page, role selector, auto-fill demo creds
 ├── practitioner.html        # Practitioner dashboard shell
 ├── patient.html             # Patient dashboard shell
